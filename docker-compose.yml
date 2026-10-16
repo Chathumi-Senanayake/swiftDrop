@@ -1,0 +1,55 @@
+# Full SwiftDrop stack:
+#   Nginx (React web app + load balancer + rate limiter)  ->  3 identical Node.js app servers  ->  MongoDB
+#
+# Start:  docker compose up -d --build
+# Seed:   docker compose exec app1 npm run seed
+# Open:   http://localhost:8080
+name: swiftdrop
+
+# Settings shared by all three app servers
+x-app: &app
+  build: ./backend
+  environment:
+    MONGO_URI: mongodb://mongo:27017/swiftdrop
+    JWT_SECRET: ${JWT_SECRET:-swiftdrop-dev-secret-change-me}
+    RESERVATION_MINUTES: 5
+  volumes:
+    - uploads:/app/uploads # all servers share the same uploaded images
+  depends_on:
+    - mongo
+  restart: unless-stopped
+
+services:
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27018:27017" # view with MongoDB Compass at mongodb://localhost:27018
+    restart: unless-stopped
+
+  app1:
+    <<: *app
+    hostname: app1
+  app2:
+    <<: *app
+    hostname: app2
+  app3:
+    <<: *app
+    hostname: app3
+
+  nginx:
+    build: ./frontend # Nginx image with the built React app inside
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
+      - app2
+      - app3
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+  uploads:

@@ -1,0 +1,24 @@
+# k6: 1000 virtual users for 30s through Nginx (all from ONE IP, so most requests are rate-limited with 429 by design) - 2026-10-14
+
+     ✓ no 5xx
+     ✓ JSON response
+
+     checks.........................: 100.00% 112012 out of 112012
+     data_received..................: 19 MB   582 kB/s
+     data_sent......................: 20 MB   622 kB/s
+     http_req_blocked...............: avg=4.7ms    min=1.56µs  med=5.46µs   max=1.31s    p(90)=11.55µs  p(95)=18.65µs 
+     http_req_connecting............: avg=4.28ms   min=0s      med=0s       max=1.31s    p(90)=0s       p(95)=0s      
+     http_req_duration..............: avg=21.97ms  min=74.21µs med=788.58µs max=2.58s    p(90)=34.01ms  p(95)=94.83ms 
+       { expected_response:true }...: avg=235.88ms min=6.45ms  med=28.58ms  max=2.58s    p(90)=932.31ms p(95)=1.57s   
+     http_req_failed................: 98.29%  55053 out of 56008
+     http_req_receiving.............: avg=1.08ms   min=13.37µs med=41.03µs  max=939.85ms p(90)=161.46µs p(95)=388.71µs
+     http_req_sending...............: avg=3.64ms   min=5.38µs  med=14.31µs  max=996.55ms p(90)=57.13µs  p(95)=213.68µs
+     http_req_tls_handshaking.......: avg=0s       min=0s      med=0s       max=0s       p(90)=0s       p(95)=0s      
+     http_req_waiting...............: avg=17.24ms  min=0s      med=653.37µs max=2.55s    p(90)=31.82ms  p(95)=85.44ms 
+     http_reqs......................: 56008   1724.837523/s
+     iteration_duration.............: avg=1.06s    min=1s      med=1s       max=4.33s    p(90)=1.09s    p(95)=1.27s   
+     iterations.....................: 28003   862.387965/s
+   ✓ server_errors..................: 0.00%   0 out of 56006
+     vus............................: 205     min=0                max=1000
+     vus_max........................: 1000    min=575              max=1000
+

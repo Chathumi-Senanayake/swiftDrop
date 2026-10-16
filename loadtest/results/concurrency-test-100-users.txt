@@ -1,0 +1,8 @@
+# 100 simultaneous buyers (NFR-04 normal load), through Nginx (2026-10-14)
+
+Responses: { reserved: 100 }
+Total time: 996 ms   p95 latency: 899 ms
+Stock left in DB: 0   Orders in DB: 100   Starting stock: 100
+
+PASS: zero oversell, stock and orders match exactly.
+PASS: no 5xx / network errors.
