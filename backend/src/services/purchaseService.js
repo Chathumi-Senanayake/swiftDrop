@@ -1,4 +1,4 @@
-// Business logic for buying: reserve -> confirm payment / cancel.
+// Business logic for buying: reserve -> pay (see paymentService.js) / cancel.
 //
 // HOW WE STOP OVERSELLING (the core of this project):
 // We never do "read stock, then write stock - 1" in two steps, because two servers could read
@@ -14,6 +14,7 @@ const Item = require('../models/Item');
 const Order = require('../models/Order');
 const AppError = require('../utils/AppError');
 const eventService = require('./eventService');
+const paymentService = require('./paymentService');
 const config = require('../config');
 
 async function reserve(user, itemId, variant = '') {
@@ -75,19 +76,6 @@ async function reserve(user, itemId, variant = '') {
   }
 }
 
-// Payment confirmed: reserved -> confirmed, in one atomic step
-async function confirm(user, orderId) {
-  const order = await Order.findOneAndUpdate(
-    { _id: orderId, userId: user._id, status: 'reserved', expiresAt: { $gt: new Date() } },
-    { status: 'confirmed' },
-    { new: true }
-  );
-  if (!order) {
-    throw new AppError(409, 'This reservation has expired or was already completed. Please try again.', 'RESERVATION_INVALID');
-  }
-  return order;
-}
-
 // Cancel: mark the order cancelled, then put the unit back into stock
 async function cancel(user, orderId) {
   const order = await releaseReservation({ _id: orderId, userId: user._id });
@@ -143,19 +131,21 @@ async function deliveries({ status = 'pending', search = '' }) {
     { $sort: delivered ? { deliveredAt: -1 } : { firstOrderAt: 1 } },
   ]);
 
-  const q = search.trim().toLowerCase();
+  const q = String(search).trim().toLowerCase();
   if (!q) return groups;
   return groups.filter(({ user }) => [user.name, user.email, user.phone, user.address].some((f) => (f || '').toLowerCase().includes(q)));
 }
 
 // Mark all of a customer's paid, undelivered orders as delivered (one parcel)
 async function markDelivered(userId) {
+  const ids = await Order.distinct('_id', { userId, status: 'confirmed', deliveredAt: null });
   const { modifiedCount } = await Order.updateMany(
-    { userId, status: 'confirmed', deliveredAt: null },
+    { _id: { $in: ids }, status: 'confirmed', deliveredAt: null },
     { deliveredAt: new Date() }
   );
   if (!modifiedCount) throw new AppError(409, 'This customer has no orders waiting for delivery.', 'NOTHING_TO_DELIVER');
+  await paymentService.markCashCollected(ids); // the courier collected the cash-on-delivery money
   return modifiedCount;
 }
 
-module.exports = { reserve, confirm, cancel, releaseExpired, myOrders, deliveries, markDelivered };
+module.exports = { reserve, cancel, releaseExpired, myOrders, deliveries, markDelivered };

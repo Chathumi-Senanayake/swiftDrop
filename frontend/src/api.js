@@ -5,7 +5,11 @@ export function getToken() {
   return localStorage.getItem('token');
 }
 export function getStoredUser() {
-  return JSON.parse(localStorage.getItem('user') || 'null');
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    return null; // damaged value -> treat as logged out instead of crashing the app
+  }
 }
 export function storeLogin(token, user) {
   localStorage.setItem('token', token);

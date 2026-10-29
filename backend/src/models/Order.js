@@ -15,7 +15,10 @@ const orderSchema = new mongoose.Schema(
     // reserved -> confirmed (paid)   or   reserved -> cancelled (stock given back)
     status: { type: String, enum: ['reserved', 'confirmed', 'cancelled'], default: 'reserved' },
     active: { type: Boolean, default: true }, // true while reserved or confirmed
-    expiresAt: Date, // reservation must be confirmed before this time
+    expiresAt: Date, // reservation must be paid before this time
+    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment', default: null }, // latest checkout for this order
+    paymentMethod: { type: String, enum: ['', 'card', 'cod'], default: '' }, // set when confirmed
+    paidAt: { type: Date, default: null }, // card: when the gateway confirmed. cod: when delivered
     deliveredAt: { type: Date, default: null }, // set by an admin when the parcel has been delivered
   },
   { timestamps: true }

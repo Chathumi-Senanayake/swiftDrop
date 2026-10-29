@@ -1,9 +1,6 @@
-// Browsing events (any logged-in user).
+// Browsing events. Public: anyone can look at the sales; buying needs an account.
 const router = require('express').Router();
 const eventService = require('../services/eventService');
-const { requireAuth } = require('../middleware/auth');
-
-router.use(requireAuth);
 
 // GET /api/events
 router.get('/', async (req, res) => {

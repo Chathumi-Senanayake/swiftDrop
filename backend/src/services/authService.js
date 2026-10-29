@@ -70,8 +70,58 @@ async function register({ name, email, password, phone, address }) {
 
 async function login({ email, password }) {
   const user = await User.findOne({ email: (email || '').trim().toLowerCase() });
-  const ok = user && (await bcrypt.compare(password || '', user.passwordHash));
+  const ok = user && user.passwordHash && (await bcrypt.compare(password || '', user.passwordHash));
+  if (user && !user.passwordHash && user.googleId) {
+    throw new AppError(401, 'This account uses Google sign-in. Please press "Continue with Google".', 'USE_GOOGLE');
+  }
   if (!ok) throw new AppError(401, 'Incorrect email or password.', 'BAD_LOGIN');
+  if (!user.active) throw new AppError(403, 'This account has been deactivated. Please contact support.', 'DEACTIVATED');
+
+  const token = await createSession(user);
+  return { token, user };
+}
+
+// "Continue with Google": the browser signs in with Firebase and sends us Firebase's ID token.
+// We check the token's signature with Google's public keys, then log in (or create) the matching account.
+let firebaseAuth = null;
+function getFirebaseAuth() {
+  if (!config.firebaseProjectId) throw new AppError(400, 'Google sign-in is not available right now.', 'METHOD_UNAVAILABLE');
+  if (!firebaseAuth) {
+    const { initializeApp, getApps } = require('firebase-admin/app');
+    const { getAuth } = require('firebase-admin/auth');
+    const app = getApps()[0] || initializeApp({ projectId: config.firebaseProjectId });
+    firebaseAuth = getAuth(app);
+  }
+  return firebaseAuth;
+}
+
+async function loginWithGoogle({ idToken }) {
+  if (!idToken || typeof idToken !== 'string') throw new AppError(400, 'Google sign-in failed. Please try again.', 'VALIDATION');
+  let claims;
+  try {
+    claims = await getFirebaseAuth().verifyIdToken(idToken);
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(401, 'Google sign-in failed or expired. Please try again.', 'BAD_LOGIN');
+  }
+  if (claims.firebase?.sign_in_provider !== 'google.com') throw new AppError(401, 'Please sign in with Google.', 'BAD_LOGIN');
+  // Only a verified address may be linked to an existing account, otherwise anyone could take it over
+  const email = (claims.email || '').toLowerCase();
+  if (!email || !claims.email_verified) throw new AppError(401, 'Your Google account has no verified email address.', 'BAD_LOGIN');
+
+  let user = await User.findOne({ googleId: claims.uid });
+  if (!user) {
+    // Same email as an existing account: link Google to it. Otherwise a new customer account.
+    // Phone and address are asked for later (the profile page / before the first purchase).
+    user = await User.findOneAndUpdate(
+      { email, googleId: { $exists: false } },
+      { $set: { googleId: claims.uid }, $setOnInsert: { name: claims.name || email.split('@')[0], role: 'customer' } },
+      { upsert: true, new: true }
+    ).catch((err) => {
+      if (err.code === 11000) throw new AppError(409, 'This email is already linked to a different Google account.', 'EMAIL_TAKEN');
+      throw err;
+    });
+  }
   if (!user.active) throw new AppError(403, 'This account has been deactivated. Please contact support.', 'DEACTIVATED');
 
   const token = await createSession(user);
@@ -101,8 +151,9 @@ async function verifyToken(token) {
   return { user, sessionId: session._id };
 }
 
+// Google-only accounts have no password yet: they may set their first one without a current password
 async function changePassword(user, { currentPassword, newPassword }) {
-  if (!(await bcrypt.compare(currentPassword || '', user.passwordHash))) {
+  if (user.passwordHash && !(await bcrypt.compare(currentPassword || '', user.passwordHash))) {
     throw new AppError(400, 'Your current password is incorrect.', 'BAD_PASSWORD');
   }
   validatePassword(newPassword);
@@ -121,4 +172,4 @@ async function updateProfile(user, { name, phone, address }) {
   return user;
 }
 
-module.exports = { register, login, logout, verifyToken, changePassword, updateProfile, signToken };
+module.exports = { register, login, loginWithGoogle, logout, verifyToken, changePassword, updateProfile, signToken };

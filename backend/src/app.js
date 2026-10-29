@@ -25,7 +25,10 @@ app.get('/api/health', (req, res) => res.json({ ok: true, instance: config.insta
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/me', require('./routes/profileRoutes'));
 app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/items', require('./routes/itemRoutes'));
 app.use('/api/purchase', require('./routes/purchaseRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/subscribe', require('./routes/subscribeRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Unknown API URL -> JSON 404 (not an HTML page)

@@ -3,6 +3,7 @@ const router = require('express').Router();
 const eventService = require('../services/eventService');
 const userService = require('../services/userService');
 const purchaseService = require('../services/purchaseService');
+const paymentService = require('../services/paymentService');
 const upload = require('../middleware/upload');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
@@ -10,7 +11,13 @@ router.use(requireAuth, requireAdmin);
 
 // GET /api/admin/dashboard
 router.get('/dashboard', async (req, res) => {
-  res.json(await eventService.getDashboard());
+  res.json({ ...(await eventService.getDashboard()), refunds: await paymentService.refundsNeeded() });
+});
+
+// POST /api/admin/payments/:id/refunded   -> the refund was sent from the PayHere portal; hide it from the dashboard
+router.post('/payments/:id/refunded', async (req, res) => {
+  await paymentService.markRefunded(req.params.id);
+  res.json({ message: 'Refund marked as done.' });
 });
 
 // ----- Events (CRUD) -----

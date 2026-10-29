@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 import { useToast } from '../context/ToastContext';
-import Img from '../components/Img';
-import StatusBadge from '../components/StatusBadge';
-import Countdown from '../components/Countdown';
+import EventCard from '../components/EventCard';
+import Icon from '../components/Icon';
 import Tabs from '../components/Tabs';
-import { formatDate, isEnded } from '../utils';
+import PageHero from '../components/PageHero';
+import { isEnded } from '../utils';
 
-// Which events belong in each tab
+// Which sales belong in each tab
 const TABS = {
   all: { label: 'All', match: () => true },
+  live: { label: 'Live now', match: (e) => e.status === 'live' },
   locked: { label: 'Upcoming', match: (e) => e.status === 'locked' },
-  live: { label: 'Live Now', match: (e) => e.status === 'live' },
   ended: { label: 'Ended', match: (e) => isEnded(e.status) },
 };
 
@@ -23,7 +23,7 @@ export default function Events() {
   const toast = useToast();
   const [params, setParams] = useSearchParams();
   const tab = TABS[params.get('tab')] ? params.get('tab') : 'all';
-  const [allEvents, setAllEvents] = useState([]);
+  const [allEvents, setAllEvents] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -37,47 +37,29 @@ export default function Events() {
     load();
   }, [load]);
 
-  const labels = Object.fromEntries(
-    Object.entries(TABS).map(([key, t]) => [key, `${t.label} (${allEvents.filter(t.match).length})`])
-  );
-  const events = allEvents.filter(TABS[tab].match).sort((a, b) => ORDER[a.status] - ORDER[b.status]);
+  const list = allEvents || [];
+  const labels = Object.fromEntries(Object.entries(TABS).map(([key, t]) => [key, t.label]));
+  const counts = Object.fromEntries(Object.entries(TABS).map(([key, t]) => [key, list.filter(t.match).length]));
+  const events = list.filter(TABS[tab].match).sort((a, b) => ORDER[a.status] - ORDER[b.status]);
 
   return (
     <main className="container page">
-      <h1 className="page-title">Events</h1>
-      <p className="muted">Join upcoming and live flash sale events. Limited stock. No restocks.</p>
+      <PageHero kicker={`${counts.live} live now · ${counts.locked} coming up`} title="Flash sales">
+        Join upcoming and live flash sales. Limited stock. No restocks.
+      </PageHero>
 
-      <Tabs tabs={labels} active={tab} onChange={(key) => setParams({ tab: key })} />
+      <Tabs tabs={labels} active={tab} onChange={(key) => setParams({ tab: key })} counts={counts} />
 
-      {events.length === 0 && <div className="card empty">No events here yet.</div>}
-      {events.map((e) => (
-        <div key={e._id} className="card event-row">
-          <Img src={e.coverImage} alt={e.name} />
-          <div className="info">
-            <StatusBadge status={e.status} />
-            <h3>{e.name}</h3>
-            <div className="muted small">
-              {e.itemCount} items • {e.status === 'locked' ? 'Starts' : 'Started'} {formatDate(e.goLiveAt)}
-            </div>
-          </div>
-          {e.status === 'locked' && <Countdown target={e.goLiveAt} onEnd={load} />}
-          {e.status === 'live' && (
-            <span className="small">
-              <span className="live-dot" />
-              Selling now
-            </span>
-          )}
-          {isEnded(e.status) ? (
-            <Link className="btn btn-ghost" to={'/events/' + e._id}>
-              Event Ended
-            </Link>
-          ) : (
-            <Link className="btn btn-primary" to={'/events/' + e._id}>
-              View Event →
-            </Link>
-          )}
+      {allEvents && events.length === 0 && (
+        <div className="card empty">
+          <Icon name="calendar" size={44} />
+          <h2>No sales here yet</h2>
+          <p>Check back soon – new sales are added all the time.</p>
         </div>
-      ))}
+      )}
+      <div className="grid grid-3">
+        {events.map((e) => <EventCard key={e._id} event={e} onCountdownEnd={load} />)}
+      </div>
     </main>
   );
 }

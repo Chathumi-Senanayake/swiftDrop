@@ -14,6 +14,14 @@ export function AuthProvider({ children }) {
     return user;
   }
 
+  // idToken: from Firebase after the Google pop-up (see firebase.js)
+  async function loginWithGoogle(idToken) {
+    const { token, user } = await api('/auth/google', { method: 'POST', body: { idToken } });
+    storeLogin(token, user);
+    setUser(user);
+    return user;
+  }
+
   async function logout() {
     try {
       await api('/auth/logout', { method: 'POST' });
@@ -29,7 +37,7 @@ export function AuthProvider({ children }) {
   }
 
   const isAdmin = user?.role === 'admin';
-  return <AuthContext.Provider value={{ user, isAdmin, login, logout, updateUser }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, isAdmin, login, loginWithGoogle, logout, updateUser }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

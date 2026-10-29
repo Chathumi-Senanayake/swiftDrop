@@ -9,6 +9,7 @@ const Session = require('../src/models/Session');
 const Event = require('../src/models/Event');
 const Item = require('../src/models/Item');
 const Order = require('../src/models/Order');
+const Payment = require('../src/models/Payment');
 
 const img = (id) => `https://images.unsplash.com/${id}?w=800&q=70&auto=format&fit=crop`;
 const hoursFromNow = (h) => new Date(Date.now() + h * 60 * 60 * 1000);
@@ -150,7 +151,7 @@ const events = [
       },
       {
         name: 'Non-Stick Pan Set',
-        price: 9990, quantity: 150, image: img('photo-1584990347449-a2d4c2c0bd8c'),
+        price: 9990, quantity: 150, image: img('photo-1590794056226-79ef3a8147e1'),
         description: 'Everyday cookware set that needs very little oil.\n\n• 3 pans: 20 cm, 24 cm and 28 cm\n• Granite non-stick coating, PFOA-free\n• Works on gas, electric and induction cookers\n• Heat-resistant soft-touch handles\n• Easy to clean',
       },
       {
@@ -233,11 +234,51 @@ const events = [
   },
 ];
 
+// Brand and normal retail price of each item (the sale price above is lower)
+const EXTRAS = {
+  'Air Fryer 5L': ['Philips', 29990],
+  'Blender Pro': ['Panasonic', 18990],
+  'Robot Vacuum': ['Xiaomi', 64990],
+  'LED Desk Lamp': ['Baseus', 5490],
+  'Wireless Headphones': ['Sony', 24990],
+  'Smart Watch': ['Samsung', 16990],
+  'Instant Camera': ['Fujifilm', 34990],
+  'Running Sneakers': ['Nike', 13990],
+  'Classic Sunglasses': ['Ray-Ban', 4990],
+  'Skincare Set': ['Cetaphil', 6990],
+  'Wireless Controller': ['8BitDo', 9990],
+  'Mechanical Keyboard': ['Keychron', 21990],
+  'Gaming Mouse': ['Logitech', 7990],
+  'Gaming Headset': ['HyperX', 13990],
+  'Espresso Machine': ['DeLonghi', 54990],
+  'Non-Stick Pan Set': ['Prestige', 15990],
+  'Chef Knife': ['Victorinox', 6490],
+  'Yoga Mat': ['Decathlon', 3990],
+  'Adjustable Dumbbells': ['Bowflex', 22990],
+  'Water Bottle': ['Hydro Flask', 3990],
+  'Laptop Backpack': ['Samsonite', 8990],
+  'Notebook Pack': ['Atlas', 1990],
+  'Wireless Earbuds': ['JBL', 9990],
+  'Bestseller Bundle': ['Penguin', 7490],
+  'Kindle Reader': ['Amazon', 44990],
+};
+
+// How long each live / upcoming sale runs after going live
+const SALE_HOURS = {
+  'Home & Living Deals': 6,
+  'Tech Essentials Flash Sale': 4,
+  'Fashion Frenzy': 12,
+  'Gaming Gear Blitz': 2,
+  'Kitchen Must-Haves': 8,
+  'Sports & Fitness Rush': 6,
+  'Back to School': 24,
+};
+
 async function seed() {
   await mongoose.connect(config.mongoUri);
   console.log('Connected. Clearing old data...');
-  await Promise.all([User, Session, Event, Item, Order].map((m) => m.deleteMany({})));
-  await Promise.all([User, Session, Event, Item, Order].map((m) => m.syncIndexes()));
+  await Promise.all([User, Session, Event, Item, Order, Payment].map((m) => m.deleteMany({})));
+  await Promise.all([User, Session, Event, Item, Order, Payment].map((m) => m.syncIndexes()));
 
   const customerHash = await bcrypt.hash('Customer@123', 10);
   const [, sarah, nimal, kavindi] = await User.create([
@@ -250,8 +291,12 @@ async function seed() {
   const createdItems = {}; // item name -> { item, event }
   for (const e of events) {
     const { items, ...eventData } = e;
+    // Live and upcoming sales run for a limited time (drives the "Sale ends in" timers)
+    if (!eventData.manualStatus) eventData.endsAt = new Date(new Date(eventData.goLiveAt).getTime() + SALE_HOURS[e.name] * 3600000);
     const event = await Event.create(eventData);
-    const docs = await Item.insertMany(items.map((i) => ({ ...i, eventId: event._id, stock: i.quantity })));
+    const docs = await Item.insertMany(
+      items.map((i) => ({ ...i, brand: EXTRAS[i.name][0], originalPrice: EXTRAS[i.name][1], eventId: event._id, stock: i.quantity }))
+    );
     docs.forEach((item) => (createdItems[item.name] = { item, event }));
   }
 
@@ -281,6 +326,8 @@ async function seed() {
       quantity: 1,
       status: 'confirmed',
       active: true,
+      paymentMethod: 'cod',
+      paidAt: delivered ? new Date() : null,
       deliveredAt: delivered ? new Date() : null,
     });
     await Item.updateOne({ _id: item._id }, { $inc: { stock: -1 } });

@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const itemSchema = new mongoose.Schema({
   eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true, index: true },
   name: { type: String, required: true, trim: true },
-  price: { type: Number, required: true, min: 0 },
+  brand: { type: String, default: '', trim: true }, // e.g. 'Sony'
+  price: { type: Number, required: true, min: 0 }, // flash sale price
+  originalPrice: { type: Number, default: null }, // normal retail price (shown struck through), optional
   image: { type: String, default: '' },
   description: { type: String, default: '' }, // shown in the item details popup, even before the event opens
   variants: { type: [String], default: [] }, // e.g. ['Black', 'White'] – the customer picks one when buying (shared stock)

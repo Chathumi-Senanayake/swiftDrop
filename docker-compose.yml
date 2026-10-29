@@ -13,6 +13,15 @@ x-app: &app
     MONGO_URI: mongodb://mongo:27017/swiftdrop
     JWT_SECRET: ${JWT_SECRET:-swiftdrop-dev-secret-change-me}
     RESERVATION_MINUTES: 5
+    FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+    # Payments: put these in a .env file next to this file (see backend/.env.example)
+    PUBLIC_URL: ${PUBLIC_URL:-}
+    COD_ENABLED: ${COD_ENABLED:-true}
+    PAYHERE_MERCHANT_ID: ${PAYHERE_MERCHANT_ID:-}
+    PAYHERE_MERCHANT_SECRET: ${PAYHERE_MERCHANT_SECRET:-}
+    PAYHERE_SANDBOX: ${PAYHERE_SANDBOX:-true}
+    CHECKOUT_MINUTES: ${CHECKOUT_MINUTES:-15}
+    PAYHERE_NOTIFY_URL: ${PAYHERE_NOTIFY_URL:-}
   volumes:
     - uploads:/app/uploads # all servers share the same uploaded images
   depends_on:

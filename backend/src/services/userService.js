@@ -9,7 +9,7 @@ async function listUsers({ page = 1, limit = 10, search = '' }) {
 
   const filter = {};
   if (search) {
-    const safe = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape regex characters
+    const safe = String(search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape regex characters
     filter.$or = [{ name: new RegExp(safe, 'i') }, { email: new RegExp(safe, 'i') }];
   }
 

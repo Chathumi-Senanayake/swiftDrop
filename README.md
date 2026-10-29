@@ -71,9 +71,25 @@ To run everything from one server instead: `cd frontend && npm run build`, then 
 | `PORT`                | `3000`                                    | Port the app server listens on                  |
 | `MONGO_URI`           | `mongodb://127.0.0.1:27017/swiftdrop`     | MongoDB connection string                       |
 | `JWT_SECRET`          | `swiftdrop-dev-secret`                    | Secret used to sign login tokens – **change it** |
-| `RESERVATION_MINUTES` | `5`                                       | Time a customer has to confirm payment          |
+| `RESERVATION_MINUTES` | `5`                                       | Time a customer has to pay after adding to cart |
+| `PUBLIC_URL`          | *(empty = the browser's address)*         | Site address, used for the payment gateway's return links |
+| `COD_ENABLED`         | `true`                                    | Offer cash on delivery                          |
+| `PAYHERE_MERCHANT_ID` / `PAYHERE_MERCHANT_SECRET` | *(empty = cards off)* | PayHere credentials for card payments |
+| `PAYHERE_SANDBOX`     | `true`                                    | `true` = PayHere sandbox (test cards), `false` = real money |
+| `PAYHERE_NOTIFY_URL`  | `PUBLIC_URL` + `/api/payments/payhere/notify` | Where PayHere reports results – **must be reachable from the internet** |
+| `CHECKOUT_MINUTES`    | `15`                                      | Extra hold time while the customer is on the card page |
 
-In Docker these are set in `docker-compose.yml` (`JWT_SECRET` can be passed from your shell: `JWT_SECRET=... docker compose up -d`).
+In Docker these are set in `docker-compose.yml`; put your values in a `.env` file next to it (`JWT_SECRET`, `PUBLIC_URL`, `PAYHERE_*` …).
+
+### Payments
+
+Customers pay for everything in their cart in one go, by **card (PayHere)** or **cash on delivery**.
+
+- **Card:** the checkout sends the browser to PayHere's own payment page with a signed amount. An order becomes *confirmed* **only** when PayHere's server calls `/api/payments/payhere/notify` with a valid `md5sig` (checked with the merchant secret) and the exact amount. The browser can never mark anything as paid.
+- **Cash on delivery:** the order is confirmed straight away; it counts as paid when an admin marks the parcel delivered. The Deliveries page shows how much cash to collect.
+- If a payment arrives after the reservation ran out, the unit is taken again if any stock is left; otherwise the order is listed under **Refunds needed** on the admin dashboard.
+
+To test cards: create a free account at <https://sandbox.payhere.lk>, add your domain, copy the Merchant ID and Merchant Secret into `.env`, and expose the site with a public URL (e.g. `ngrok http 8080`, then `PUBLIC_URL=https://xxxx.ngrok-free.app`) so PayHere can reach the notify URL. For real payments use your live PayHere account and `PAYHERE_SANDBOX=false`.
 
 ## 4. Seeding
 
@@ -97,7 +113,7 @@ Full picture: [`docs/architecture.png`](docs/architecture.png).
 | **Stateless app servers** | Sessions, stock and orders live in MongoDB, images on a shared volume, so any server can answer any request | `docker-compose.yml` |
 | **Atomic stock update** | `findOneAndUpdate({ _id, stock: { $gt: 0 } }, { $inc: { stock: -1 } })` – "take one only if any are left" in a single indivisible database step → **zero oversell** | `backend/src/services/purchaseService.js` |
 | **Unique index** | `(userId, itemId)` unique while the order is active → the database blocks duplicate purchases | `backend/src/models/Order.js` |
-| **Reserve → confirm** | Stock is held on reserve; confirm marks the order confirmed; cancel or a 5-minute timeout returns the unit | `purchaseService.js` + job in `server.js` |
+| **Reserve → pay** | Adding to cart holds the unit; a verified payment (or a cash-on-delivery order) confirms it; removing it or a 5-minute timeout returns the unit | `purchaseService.js`, `paymentService.js` + job in `server.js` |
 
 Response header `X-Served-By` shows which app server answered each request.
 
@@ -144,12 +160,17 @@ All errors look like `{ "error": { "code": "SOLD_OUT", "message": "Sorry, this i
 | GET / PUT | `/api/me` | user | View / update display name |
 | PUT | `/api/me/password` | user | Change password |
 | GET | `/api/me/orders` | user | Order history |
-| GET | `/api/events` | user | All events with items + status |
-| GET | `/api/events/:id` | user | One event |
-| GET | `/api/events/:id/stock` | user | Live stock (polled) |
-| POST | `/api/purchase/reserve` | user | Reserve 1 unit `{ itemId }` |
-| POST | `/api/purchase/:orderId/confirm` | user | Confirm payment |
-| POST | `/api/purchase/:orderId/cancel` | user | Cancel, unit returns to stock |
+| GET | `/api/events` | public | All events with items + status |
+| GET | `/api/events/:id` | public | One event |
+| GET | `/api/events/:id/stock` | public | Live stock (polled) |
+| GET | `/api/items?status=live\|locked\|all&search=` | public | Products across sales (deals, search) |
+| GET | `/api/items/:id` | public | One product + its sale |
+| POST | `/api/purchase/reserve` | customer | Add to cart = reserve 1 unit `{ itemId, variant }` |
+| POST | `/api/purchase/:orderId/cancel` | customer | Remove from cart, unit returns to stock |
+| GET | `/api/payments/methods` | public | Which payment methods are on |
+| POST | `/api/payments/checkout` | customer | Pay for reserved orders `{ orderIds, method: 'card' \| 'cod' }` |
+| POST | `/api/payments/payhere/notify` | PayHere | Signed payment result (server to server) |
+| GET | `/api/payments/:id` | customer | Payment status + its orders |
 | GET | `/api/admin/dashboard` | admin | Events, status, units sold, revenue |
 | POST | `/api/admin/events` | admin | **Create** event (multipart form with images) |
 | PUT | `/api/admin/events/:id` | admin | **Update** a locked event |

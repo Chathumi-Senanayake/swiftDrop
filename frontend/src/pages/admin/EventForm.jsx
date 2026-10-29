@@ -8,7 +8,7 @@ import AdminLayout from '../../components/AdminLayout';
 // variantsText = varieties typed as "Black, White, Blue"
 // variantImages / variantFiles = photo per variety, keyed by variety name: existing URL / newly picked { file, preview }
 const newItem = () => ({
-  name: '', price: '', quantity: 100, description: '', variantsText: '', image: '', file: null, preview: '',
+  name: '', brand: '', price: '', originalPrice: '', quantity: 100, description: '', variantsText: '', image: '', file: null, preview: '',
   variantImages: {}, variantFiles: {},
 });
 const splitVariants = (text) => text.split(',').map((v) => v.trim()).filter(Boolean);
@@ -25,7 +25,7 @@ export default function EventForm() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [fields, setFields] = useState({ name: '', description: '', goLiveAt: '' });
+  const [fields, setFields] = useState({ name: '', description: '', goLiveAt: '', endsAt: '' });
   const [coverImage, setCoverImage] = useState(''); // existing cover URL (edit mode)
   const [coverFile, setCoverFile] = useState(null); // newly picked file
   const [items, setItems] = useState(editId ? [] : [newItem()]);
@@ -42,13 +42,20 @@ export default function EventForm() {
           toast('Only locked events can be edited.', 'error');
           return setTimeout(() => navigate('/admin'), 1500);
         }
-        setFields({ name: event.name, description: event.description, goLiveAt: toLocalInput(event.goLiveAt) });
+        setFields({
+          name: event.name,
+          description: event.description,
+          goLiveAt: toLocalInput(event.goLiveAt),
+          endsAt: event.endsAt ? toLocalInput(event.endsAt) : '',
+        });
         setCoverImage(event.coverImage);
         setItems(
           event.items.map((i) => ({
             ...newItem(),
             name: i.name,
+            brand: i.brand || '',
             price: i.price,
+            originalPrice: i.originalPrice ?? '',
             quantity: i.quantity,
             description: i.description || '',
             variantsText: (i.variants || []).join(', '),
@@ -89,14 +96,15 @@ export default function EventForm() {
     data.append('name', fields.name);
     data.append('description', fields.description);
     data.append('goLiveAt', new Date(fields.goLiveAt).toISOString());
+    data.append('endsAt', fields.endsAt ? new Date(fields.endsAt).toISOString() : '');
     data.append('coverImage', coverImage);
     if (coverFile) data.append('cover', coverFile);
     data.append(
       'items',
       JSON.stringify(
-        items.map(({ name, price, quantity, description, variantsText, variantImages, image }) => {
+        items.map(({ name, brand, price, originalPrice, quantity, description, variantsText, variantImages, image }) => {
           const variants = splitVariants(variantsText);
-          return { name, price, quantity, description, variants, variantImages: variants.map((v) => variantImages[v] || ''), image };
+          return { name, brand, price, originalPrice, quantity, description, variants, variantImages: variants.map((v) => variantImages[v] || ''), image };
         })
       )
     );
@@ -124,22 +132,28 @@ export default function EventForm() {
   return (
     <AdminLayout>
       <form className="card card-pad" onSubmit={submit}>
-        <h1 className="page-title">{editId ? 'Edit Event' : 'Create New Event'}</h1>
+        <h1 className="page-title">{editId ? 'Edit sale' : 'Create a new sale'}</h1>
         <p className="muted small" style={{ marginBottom: 20 }}>
-          New events start <strong>Locked</strong> and open automatically at the go-live time.
+          New sales start <strong>Locked</strong> and open automatically at the go-live time.
         </p>
 
         <div className="form-group">
-          <label>Event Name</label>
+          <label>Sale name</label>
           <input required placeholder="Tech Essentials Flash Sale" {...field('name')} />
         </div>
         <div className="form-group">
           <label>Description</label>
           <textarea rows={2} placeholder="Limited time offers on top tech products." {...field('description')} />
         </div>
-        <div className="form-group">
-          <label>Go-Live Date & Time</label>
-          <input type="datetime-local" required {...field('goLiveAt')} />
+        <div className="form-row">
+          <div className="form-group">
+            <label>Go-live date & time</label>
+            <input type="datetime-local" required {...field('goLiveAt')} />
+          </div>
+          <div className="form-group">
+            <label>Ends at <span className="muted">(optional – shows a "Sale ends in" timer)</span></label>
+            <input type="datetime-local" min={fields.goLiveAt || undefined} {...field('endsAt')} />
+          </div>
         </div>
 
         <div className="form-group">
@@ -151,12 +165,14 @@ export default function EventForm() {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '26px 0 12px' }}>
-          <h2>Items</h2>
+          <h2>Products</h2>
           <button type="button" className="btn btn-outline btn-sm" onClick={() => setItems((list) => [...list, newItem()])}>
-            + Add Item
+            + Add product
           </button>
         </div>
-        <p className="muted small" style={{ marginBottom: 10 }}>Image · Name · Price (Rs.) · Quantity (100–500) · Description · Varieties</p>
+        <p className="muted small" style={{ marginBottom: 10 }}>
+          Image · Name · Brand · Sale price · Normal price (optional, shows the discount) · Quantity (100–500) · Description · Varieties
+        </p>
 
         {items.map((it, i) => {
           const url = it.preview || it.image;
@@ -166,8 +182,10 @@ export default function EventForm() {
                 {!url && '+ Image'}
               </label>
               <input type="file" id={'file-' + i} accept="image/*" className="hidden" onChange={(e) => pickItemImage(i, e.target.files[0])} />
-              <input placeholder="Item name" required value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} />
-              <input type="number" step="0.01" min="1" placeholder="Price (Rs.)" required value={it.price} onChange={(e) => updateItem(i, { price: e.target.value })} />
+              <input placeholder="Product name" required value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} aria-label="Product name" />
+              <input placeholder="Brand" maxLength={60} value={it.brand} onChange={(e) => updateItem(i, { brand: e.target.value })} aria-label="Brand" />
+              <input type="number" step="0.01" min="1" placeholder="Sale price (Rs.)" required value={it.price} onChange={(e) => updateItem(i, { price: e.target.value })} aria-label="Sale price" />
+              <input type="number" step="0.01" min="1" placeholder="Normal price" value={it.originalPrice} onChange={(e) => updateItem(i, { originalPrice: e.target.value })} aria-label="Normal price" />
               <input type="number" min="100" max="500" placeholder="Qty" required value={it.quantity} onChange={(e) => updateItem(i, { quantity: e.target.value })} />
               <button type="button" className="btn btn-danger btn-sm" onClick={() => removeItem(i)}>
                 ✕
@@ -212,7 +230,7 @@ export default function EventForm() {
         <div style={{ display: 'flex', gap: 10 }}>
           <Link to="/admin" className="btn btn-ghost">Cancel</Link>
           <button className="btn btn-primary" disabled={saving}>
-            {editId ? 'Save Changes' : 'Create Event'}
+            {editId ? 'Save changes' : 'Create sale'}
           </button>
         </div>
       </form>
