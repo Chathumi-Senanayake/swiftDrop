@@ -10,6 +10,21 @@ A full-stack flash sale marketplace built to stay correct and responsive when **
 
 ![Architecture](docs/architecture.png)
 
+### Database design (ERD)
+
+![Entity Relationship Diagram](docs/erd.png)
+
+| Relationship | Type | Stored as |
+|---|---|---|
+| Event → Item | one sale has many products | `Item.eventId` |
+| User → Order | one customer has many orders | `Order.userId` |
+| Item → Order | one product is ordered many times | `Order.itemId` (+ `Order.eventId`) |
+| Payment → Order | one checkout pays for one or more orders | `Payment.orderIds[]` / `Order.paymentId` |
+| User → Payment | one customer makes many payments | `Payment.userId` |
+| User → Session | one user can be logged in on many devices | `Session.userId` |
+
+`Subscriber` (sale-alert e-mails) stands alone. Source of the diagram: [`docs/erd.html`](docs/erd.html).
+
 ---
 
 ## 1. Quick start (Docker – recommended, runs everything)

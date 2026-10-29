@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SwiftDrop ERD</title>
+<style>
+  body { margin: 0; background: #ffffff; font-family: 'Segoe UI', system-ui, sans-serif; }
+  svg text { font-family: 'Segoe UI', system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<!-- Source of docs/erd.png. Re-render with headless Edge/Chrome at 1700x1220. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1220" viewBox="0 0 1700 1220">
+<defs>
+  <!-- "one": a bar across the line. "many": crow's foot. -->
+  <marker id="one" viewBox="0 0 20 20" refX="2" refY="10" markerWidth="20" markerHeight="20" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M8 2 V18" stroke="#1e3a8a" stroke-width="2.2"/>
+  </marker>
+  <marker id="many" viewBox="0 0 20 20" refX="19" refY="10" markerWidth="22" markerHeight="22" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M19 2 L4 10 L19 18 M4 10 H19 M2 2 V18" fill="none" stroke="#1e3a8a" stroke-width="2"/>
+  </marker>
+</defs>
+<rect width="1700" height="1220" fill="#ffffff"/>
+<text x="50" y="62" font-size="30" font-weight="800" fill="#12141c">SwiftDrop – Entity Relationship Diagram</text>
+<text x="50" y="94" font-size="16" fill="#5b5f6b">MongoDB (Mongoose) collections, their fields and data types, primary / foreign / unique keys and one-to-many relationships</text>
+<path d="M240 452 L240 560" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="252" y="511" font-size="13" font-style="italic" text-anchor="start" fill="#1e3a8a">logs in with</text>
+<path d="M490 260 L620 260" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="555" y="250" font-size="13" font-style="italic" text-anchor="middle" fill="#1e3a8a">places</text>
+<path d="M490 380 L555 380 L555 790 L620 790" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="562" y="750" font-size="13" font-style="italic" text-anchor="start" fill="#1e3a8a">pays</text>
+<path d="M1210 260 L1060 260" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="1135" y="250" font-size="13" font-style="italic" text-anchor="middle" fill="#1e3a8a">sold in</text>
+<path d="M1420 404 L1420 480" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="1432" y="447" font-size="13" font-style="italic" text-anchor="start" fill="#1e3a8a">contains</text>
+<path d="M1210 620 L1135 620 L1135 480 L1060 480" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="1142" y="545" font-size="13" font-style="italic" text-anchor="start" fill="#1e3a8a">ordered as</text>
+<path d="M830 690 L830 620" fill="none" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="842" y="660" font-size="13" font-style="italic" text-anchor="start" fill="#1e3a8a">pays for (orderIds / paymentId)</text>
+<g>
+  <rect x="50" y="150" width="440" height="302" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M50 162 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="66" y="183" font-size="19" font-weight="700" fill="#ffffff">User</text>
+  <text x="474" y="183" font-size="14" text-anchor="end" fill="#f1d98a">users</text>
+  <rect x="52" y="202" width="436" height="24" fill="#fbf3dc"/>
+  <text x="64" y="219" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="240" y="219" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="446" y="206" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="461" y="218" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="52" y="226" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="243" font-size="13.5" font-weight="400" fill="#12141c">name</text>
+  <text x="240" y="243" font-size="12.5" fill="#5b5f6b">String</text>
+  <text x="64" y="267" font-size="13.5" font-weight="700" fill="#12141c">email</text>
+  <text x="240" y="267" font-size="12.5" fill="#5b5f6b">String</text>
+  <rect x="446" y="254" width="30" height="16" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="0.8"/>
+  <text x="461" y="266" font-size="10.5" font-weight="700" text-anchor="middle" fill="#047857">UQ</text>
+  <rect x="52" y="274" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="291" font-size="13.5" font-weight="400" fill="#12141c">passwordHash</text>
+  <text x="240" y="291" font-size="12.5" fill="#5b5f6b">String (bcrypt)</text>
+  <text x="64" y="315" font-size="13.5" font-weight="700" fill="#12141c">googleId</text>
+  <text x="240" y="315" font-size="12.5" fill="#5b5f6b">String</text>
+  <rect x="446" y="302" width="30" height="16" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="0.8"/>
+  <text x="461" y="314" font-size="10.5" font-weight="700" text-anchor="middle" fill="#047857">UQ</text>
+  <rect x="52" y="322" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="339" font-size="13.5" font-weight="400" fill="#12141c">phone</text>
+  <text x="240" y="339" font-size="12.5" fill="#5b5f6b">String</text>
+  <text x="64" y="363" font-size="13.5" font-weight="400" fill="#12141c">address</text>
+  <text x="240" y="363" font-size="12.5" fill="#5b5f6b">String</text>
+  <rect x="52" y="370" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="387" font-size="13.5" font-weight="400" fill="#12141c">role</text>
+  <text x="240" y="387" font-size="12.5" fill="#5b5f6b">enum: customer | admin</text>
+  <text x="64" y="411" font-size="13.5" font-weight="400" fill="#12141c">active</text>
+  <text x="240" y="411" font-size="12.5" fill="#5b5f6b">Boolean</text>
+  <rect x="52" y="418" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="435" font-size="13.5" font-weight="400" fill="#12141c">createdAt / updatedAt</text>
+  <text x="240" y="435" font-size="12.5" fill="#5b5f6b">Date</text>
+</g>
+<g>
+  <rect x="50" y="560" width="440" height="134" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M50 572 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="66" y="593" font-size="19" font-weight="700" fill="#ffffff">Session</text>
+  <text x="474" y="593" font-size="14" text-anchor="end" fill="#f1d98a">sessions</text>
+  <rect x="52" y="612" width="436" height="24" fill="#fbf3dc"/>
+  <text x="64" y="629" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="240" y="629" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="446" y="616" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="461" y="628" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="52" y="636" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="653" font-size="13.5" font-weight="700" fill="#12141c">userId</text>
+  <text x="240" y="653" font-size="12.5" fill="#5b5f6b">ObjectId → User</text>
+  <rect x="446" y="640" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="461" y="652" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <text x="64" y="677" font-size="13.5" font-weight="700" fill="#12141c">expiresAt</text>
+  <text x="240" y="677" font-size="12.5" fill="#5b5f6b">Date (auto-delete)</text>
+  <rect x="437" y="664" width="39" height="16" rx="8" fill="#f1f5f9" stroke="#475569" stroke-width="0.8"/>
+  <text x="456.5" y="676" font-size="10.5" font-weight="700" text-anchor="middle" fill="#475569">TTL</text>
+</g>
+<g>
+  <rect x="50" y="790" width="440" height="134" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M50 802 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="66" y="823" font-size="19" font-weight="700" fill="#ffffff">Subscriber</text>
+  <text x="474" y="823" font-size="14" text-anchor="end" fill="#f1d98a">subscribers</text>
+  <rect x="52" y="842" width="436" height="24" fill="#fbf3dc"/>
+  <text x="64" y="859" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="240" y="859" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="446" y="846" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="461" y="858" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="52" y="866" width="436" height="24" fill="#faf7f5"/>
+  <text x="64" y="883" font-size="13.5" font-weight="700" fill="#12141c">email</text>
+  <text x="240" y="883" font-size="12.5" fill="#5b5f6b">String</text>
+  <rect x="446" y="870" width="30" height="16" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="0.8"/>
+  <text x="461" y="882" font-size="10.5" font-weight="700" text-anchor="middle" fill="#047857">UQ</text>
+  <text x="64" y="907" font-size="13.5" font-weight="400" fill="#12141c">createdAt / updatedAt</text>
+  <text x="240" y="907" font-size="12.5" fill="#5b5f6b">Date</text>
+</g>
+<g>
+  <rect x="620" y="150" width="440" height="470" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M620 162 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="636" y="183" font-size="19" font-weight="700" fill="#ffffff">Order</text>
+  <text x="1044" y="183" font-size="14" text-anchor="end" fill="#f1d98a">orders</text>
+  <rect x="622" y="202" width="436" height="24" fill="#fbf3dc"/>
+  <text x="634" y="219" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="810" y="219" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="1016" y="206" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="1031" y="218" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="622" y="226" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="243" font-size="13.5" font-weight="700" fill="#12141c">userId</text>
+  <text x="810" y="243" font-size="12.5" fill="#5b5f6b">ObjectId → User</text>
+  <rect x="1016" y="230" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="242" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <text x="634" y="267" font-size="13.5" font-weight="700" fill="#12141c">eventId</text>
+  <text x="810" y="267" font-size="12.5" fill="#5b5f6b">ObjectId → Event</text>
+  <rect x="1016" y="254" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="266" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <rect x="622" y="274" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="291" font-size="13.5" font-weight="700" fill="#12141c">itemId</text>
+  <text x="810" y="291" font-size="12.5" fill="#5b5f6b">ObjectId → Item</text>
+  <rect x="1016" y="278" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="290" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <text x="634" y="315" font-size="13.5" font-weight="700" fill="#12141c">paymentId</text>
+  <text x="810" y="315" font-size="12.5" fill="#5b5f6b">ObjectId → Payment</text>
+  <rect x="1016" y="302" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="314" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <rect x="622" y="322" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="339" font-size="13.5" font-weight="400" fill="#12141c">eventName, itemName</text>
+  <text x="810" y="339" font-size="12.5" fill="#5b5f6b">String (copy)</text>
+  <text x="634" y="363" font-size="13.5" font-weight="400" fill="#12141c">itemImage</text>
+  <text x="810" y="363" font-size="12.5" fill="#5b5f6b">String (copy)</text>
+  <rect x="622" y="370" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="387" font-size="13.5" font-weight="400" fill="#12141c">variant</text>
+  <text x="810" y="387" font-size="12.5" fill="#5b5f6b">String</text>
+  <text x="634" y="411" font-size="13.5" font-weight="400" fill="#12141c">price</text>
+  <text x="810" y="411" font-size="12.5" fill="#5b5f6b">Number</text>
+  <rect x="622" y="418" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="435" font-size="13.5" font-weight="400" fill="#12141c">quantity</text>
+  <text x="810" y="435" font-size="12.5" fill="#5b5f6b">Number</text>
+  <text x="634" y="459" font-size="13.5" font-weight="400" fill="#12141c">status</text>
+  <text x="810" y="459" font-size="12.5" fill="#5b5f6b">enum: reserved | confirmed | cancelled</text>
+  <rect x="622" y="466" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="483" font-size="13.5" font-weight="400" fill="#12141c">active</text>
+  <text x="810" y="483" font-size="12.5" fill="#5b5f6b">Boolean</text>
+  <text x="634" y="507" font-size="13.5" font-weight="400" fill="#12141c">expiresAt</text>
+  <text x="810" y="507" font-size="12.5" fill="#5b5f6b">Date</text>
+  <rect x="622" y="514" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="531" font-size="13.5" font-weight="400" fill="#12141c">paymentMethod</text>
+  <text x="810" y="531" font-size="12.5" fill="#5b5f6b">enum: card | cod</text>
+  <text x="634" y="555" font-size="13.5" font-weight="400" fill="#12141c">paidAt</text>
+  <text x="810" y="555" font-size="12.5" fill="#5b5f6b">Date</text>
+  <rect x="622" y="562" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="579" font-size="13.5" font-weight="400" fill="#12141c">deliveredAt</text>
+  <text x="810" y="579" font-size="12.5" fill="#5b5f6b">Date</text>
+  <text x="634" y="603" font-size="13.5" font-weight="400" fill="#12141c">createdAt / updatedAt</text>
+  <text x="810" y="603" font-size="12.5" fill="#5b5f6b">Date</text>
+</g>
+<g>
+  <rect x="620" y="690" width="440" height="398" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M620 702 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="636" y="723" font-size="19" font-weight="700" fill="#ffffff">Payment</text>
+  <text x="1044" y="723" font-size="14" text-anchor="end" fill="#f1d98a">payments</text>
+  <rect x="622" y="742" width="436" height="24" fill="#fbf3dc"/>
+  <text x="634" y="759" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="810" y="759" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="1016" y="746" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="1031" y="758" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="622" y="766" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="783" font-size="13.5" font-weight="700" fill="#12141c">userId</text>
+  <text x="810" y="783" font-size="12.5" fill="#5b5f6b">ObjectId → User</text>
+  <rect x="1016" y="770" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="782" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <text x="634" y="807" font-size="13.5" font-weight="700" fill="#12141c">orderIds</text>
+  <text x="810" y="807" font-size="12.5" fill="#5b5f6b">[ObjectId] → Order</text>
+  <rect x="1016" y="794" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="806" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <rect x="622" y="814" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="831" font-size="13.5" font-weight="400" fill="#12141c">amount</text>
+  <text x="810" y="831" font-size="12.5" fill="#5b5f6b">Number</text>
+  <text x="634" y="855" font-size="13.5" font-weight="400" fill="#12141c">currency</text>
+  <text x="810" y="855" font-size="12.5" fill="#5b5f6b">String (LKR)</text>
+  <rect x="622" y="862" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="879" font-size="13.5" font-weight="400" fill="#12141c">method</text>
+  <text x="810" y="879" font-size="12.5" fill="#5b5f6b">enum: card | cod</text>
+  <text x="634" y="903" font-size="13.5" font-weight="400" fill="#12141c">status</text>
+  <text x="810" y="903" font-size="12.5" fill="#5b5f6b">enum: pending | paid | failed | …</text>
+  <rect x="622" y="910" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="927" font-size="13.5" font-weight="400" fill="#12141c">gatewayRef, cardNo</text>
+  <text x="810" y="927" font-size="12.5" fill="#5b5f6b">String (card masked)</text>
+  <text x="634" y="951" font-size="13.5" font-weight="400" fill="#12141c">gatewayMethod</text>
+  <text x="810" y="951" font-size="12.5" fill="#5b5f6b">String (VISA, …)</text>
+  <rect x="622" y="958" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="975" font-size="13.5" font-weight="400" fill="#12141c">paidAt</text>
+  <text x="810" y="975" font-size="12.5" fill="#5b5f6b">Date</text>
+  <text x="634" y="999" font-size="13.5" font-weight="700" fill="#12141c">refundOrderIds</text>
+  <text x="810" y="999" font-size="12.5" fill="#5b5f6b">[ObjectId] → Order</text>
+  <rect x="1016" y="986" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1031" y="998" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <rect x="622" y="1006" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="1023" font-size="13.5" font-weight="400" fill="#12141c">refundedAt</text>
+  <text x="810" y="1023" font-size="12.5" fill="#5b5f6b">Date</text>
+  <text x="634" y="1047" font-size="13.5" font-weight="400" fill="#12141c">deliverTo</text>
+  <text x="810" y="1047" font-size="12.5" fill="#5b5f6b">{ name, phone, address }</text>
+  <rect x="622" y="1054" width="436" height="24" fill="#faf7f5"/>
+  <text x="634" y="1071" font-size="13.5" font-weight="400" fill="#12141c">createdAt / updatedAt</text>
+  <text x="810" y="1071" font-size="12.5" fill="#5b5f6b">Date</text>
+</g>
+<g>
+  <rect x="1210" y="150" width="440" height="254" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M1210 162 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="1226" y="183" font-size="19" font-weight="700" fill="#ffffff">Event (flash sale)</text>
+  <text x="1634" y="183" font-size="14" text-anchor="end" fill="#f1d98a">events</text>
+  <rect x="1212" y="202" width="436" height="24" fill="#fbf3dc"/>
+  <text x="1224" y="219" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="1400" y="219" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="1606" y="206" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="1621" y="218" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="1212" y="226" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="243" font-size="13.5" font-weight="400" fill="#12141c">name</text>
+  <text x="1400" y="243" font-size="12.5" fill="#5b5f6b">String</text>
+  <text x="1224" y="267" font-size="13.5" font-weight="400" fill="#12141c">description</text>
+  <text x="1400" y="267" font-size="12.5" fill="#5b5f6b">String</text>
+  <rect x="1212" y="274" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="291" font-size="13.5" font-weight="400" fill="#12141c">coverImage</text>
+  <text x="1400" y="291" font-size="12.5" fill="#5b5f6b">String (URL)</text>
+  <text x="1224" y="315" font-size="13.5" font-weight="400" fill="#12141c">goLiveAt</text>
+  <text x="1400" y="315" font-size="12.5" fill="#5b5f6b">Date</text>
+  <rect x="1212" y="322" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="339" font-size="13.5" font-weight="400" fill="#12141c">endsAt</text>
+  <text x="1400" y="339" font-size="12.5" fill="#5b5f6b">Date</text>
+  <text x="1224" y="363" font-size="13.5" font-weight="400" fill="#12141c">manualStatus</text>
+  <text x="1400" y="363" font-size="12.5" fill="#5b5f6b">enum: live | closed | null</text>
+  <rect x="1212" y="370" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="387" font-size="13.5" font-weight="400" fill="#12141c">createdAt / updatedAt</text>
+  <text x="1400" y="387" font-size="12.5" fill="#5b5f6b">Date</text>
+</g>
+<g>
+  <rect x="1210" y="480" width="440" height="350" rx="12" fill="#ffffff" stroke="#8c1c3a" stroke-width="2"/>
+  <path d="M1210 492 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v40 h-440 z" fill="#8c1c3a"/>
+  <text x="1226" y="513" font-size="19" font-weight="700" fill="#ffffff">Item (product)</text>
+  <text x="1634" y="513" font-size="14" text-anchor="end" fill="#f1d98a">items</text>
+  <rect x="1212" y="532" width="436" height="24" fill="#fbf3dc"/>
+  <text x="1224" y="549" font-size="13.5" font-weight="700" fill="#12141c">_id</text>
+  <text x="1400" y="549" font-size="12.5" fill="#5b5f6b">ObjectId</text>
+  <rect x="1606" y="536" width="30" height="16" rx="8" fill="#fbf3dc" stroke="#8a6510" stroke-width="0.8"/>
+  <text x="1621" y="548" font-size="10.5" font-weight="700" text-anchor="middle" fill="#8a6510">PK</text>
+  <rect x="1212" y="556" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="573" font-size="13.5" font-weight="700" fill="#12141c">eventId</text>
+  <text x="1400" y="573" font-size="12.5" fill="#5b5f6b">ObjectId → Event</text>
+  <rect x="1606" y="560" width="30" height="16" rx="8" fill="#eef2ff" stroke="#3730a3" stroke-width="0.8"/>
+  <text x="1621" y="572" font-size="10.5" font-weight="700" text-anchor="middle" fill="#3730a3">FK</text>
+  <text x="1224" y="597" font-size="13.5" font-weight="400" fill="#12141c">name</text>
+  <text x="1400" y="597" font-size="12.5" fill="#5b5f6b">String</text>
+  <rect x="1212" y="604" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="621" font-size="13.5" font-weight="400" fill="#12141c">brand</text>
+  <text x="1400" y="621" font-size="12.5" fill="#5b5f6b">String</text>
+  <text x="1224" y="645" font-size="13.5" font-weight="400" fill="#12141c">price</text>
+  <text x="1400" y="645" font-size="12.5" fill="#5b5f6b">Number (sale price)</text>
+  <rect x="1212" y="652" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="669" font-size="13.5" font-weight="400" fill="#12141c">originalPrice</text>
+  <text x="1400" y="669" font-size="12.5" fill="#5b5f6b">Number</text>
+  <text x="1224" y="693" font-size="13.5" font-weight="400" fill="#12141c">image</text>
+  <text x="1400" y="693" font-size="12.5" fill="#5b5f6b">String (URL)</text>
+  <rect x="1212" y="700" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="717" font-size="13.5" font-weight="400" fill="#12141c">description</text>
+  <text x="1400" y="717" font-size="12.5" fill="#5b5f6b">String</text>
+  <text x="1224" y="741" font-size="13.5" font-weight="400" fill="#12141c">variants</text>
+  <text x="1400" y="741" font-size="12.5" fill="#5b5f6b">[String]</text>
+  <rect x="1212" y="748" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="765" font-size="13.5" font-weight="400" fill="#12141c">variantImages</text>
+  <text x="1400" y="765" font-size="12.5" fill="#5b5f6b">[String]</text>
+  <text x="1224" y="789" font-size="13.5" font-weight="400" fill="#12141c">quantity</text>
+  <text x="1400" y="789" font-size="12.5" fill="#5b5f6b">Number (starting stock)</text>
+  <rect x="1212" y="796" width="436" height="24" fill="#faf7f5"/>
+  <text x="1224" y="813" font-size="13.5" font-weight="400" fill="#12141c">stock</text>
+  <text x="1400" y="813" font-size="12.5" fill="#5b5f6b">Number (min 0)</text>
+</g>
+<text x="50" y="948" font-size="13" fill="#5b5f6b">Stand-alone: e-mails that asked for sale alerts</text>
+<rect x="1210" y="870" width="440" height="250" rx="12" fill="#faf7f5" stroke="#ddd6ce"/>
+<text x="1228" y="900" font-size="16" font-weight="700" fill="#12141c">Legend</text>
+<path d="M1228 926 H1308" stroke="#1e3a8a" stroke-width="2" marker-start="url(#one)" marker-end="url(#many)"/>
+<text x="1322" y="931" font-size="13" fill="#12141c">one (bar) to many (crow's foot)</text>
+<text x="1228" y="962" font-size="13" fill="#12141c"><tspan font-weight="700" fill="#8a6510">PK</tspan> primary key   <tspan font-weight="700" fill="#3730a3">FK</tspan> reference (foreign key)   <tspan font-weight="700" fill="#047857">UQ</tspan> unique</text>
+<text x="1228" y="988" font-size="13" fill="#12141c"><tspan font-weight="700" fill="#475569">TTL</tspan> MongoDB deletes the row when the date passes</text>
+<text x="1228" y="1020" font-size="13" font-weight="700" fill="#12141c">Key rules enforced by the database</text>
+<text x="1228" y="1042" font-size="12.5" fill="#5b5f6b">• Order: unique (userId, itemId) while active</text>
+<text x="1238" y="1060" font-size="12.5" fill="#5b5f6b">→ one active order per customer per product</text>
+<text x="1228" y="1080" font-size="12.5" fill="#5b5f6b">• Item.stock ≥ 0 (atomic decrement, no overselling)</text>
+<text x="1228" y="1100" font-size="12.5" fill="#5b5f6b">• Order copies item name / price at purchase time</text>
+</svg>
+</body>
+</html>
