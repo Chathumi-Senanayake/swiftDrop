@@ -3,7 +3,6 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import TickerBar from './components/TickerBar';
-import JustSold from './components/JustSold';
 import BackToTop from './components/BackToTop';
 import RequireAuth from './components/RequireAuth';
 import Home from './pages/Home';
@@ -70,7 +69,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!bare && !admin && <Footer />}
-      {!admin && <JustSold />}
       <BackToTop />
     </>
   );

@@ -251,7 +251,6 @@ All errors look like `{ "error": { "code": "SOLD_OUT", "message": "Sorry, this i
 | GET | `/api/events/:id/stock` | public | Live stock (polled) |
 | GET | `/api/items?status=live\|locked\|all&search=` | public | Products across sales (deals, search) |
 | GET | `/api/items/:id` | public | One product + its sale |
-| GET | `/api/items/recent-sales` | public | Latest purchases for the "just bought" pop-up (item + town only) |
 | POST | `/api/subscribe` | public | Sign up for sale alerts `{ email }` |
 | POST | `/api/purchase/reserve` | customer | Add to cart = reserve 1 unit `{ itemId, variant }` |
 | POST | `/api/purchase/:orderId/cancel` | customer | Remove from cart, unit returns to stock |

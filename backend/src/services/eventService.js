@@ -57,16 +57,6 @@ async function listItems({ status = 'live', search = '', limit = 60 } = {}) {
   return items.slice(0, Math.min(200, Number(limit) || 60));
 }
 
-// Latest confirmed purchases for the "just bought" pop-up. Only the item and the buyer's town are shown, never who.
-async function recentSales(limit = 8) {
-  const orders = await Order.find({ status: 'confirmed' }).sort({ createdAt: -1 }).limit(limit).populate('userId', 'address').lean();
-  return orders.map((o) => {
-    const parts = (o.userId?.address || '').split(',').map((p) => p.trim()).filter(Boolean);
-    const town = parts.length > 1 && parts.at(-1).length <= 24 && !/\d/.test(parts.at(-1)) ? parts.at(-1) : '';
-    return { itemId: o.itemId, itemName: o.itemName, itemImage: o.itemImage, town, at: o.createdAt };
-  });
-}
-
 // One product page: the item, its event (with the other items, for "more from this sale")
 async function getItem(id) {
   const item = await Item.findById(id).lean();
@@ -258,7 +248,6 @@ module.exports = {
   getStock,
   listItems,
   getItem,
-  recentSales,
   createEvent,
   updateEvent,
   deleteEvent,
