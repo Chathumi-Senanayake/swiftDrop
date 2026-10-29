@@ -38,6 +38,40 @@ The main entity is the **flash sale (Event) with its products (Items)**, managed
 
 Other records with CRUD: **users** (sign up, profile edit, admin activate / deactivate), **orders** (add to cart, view history, cancel / remove from cart) and **payments** (checkout, view result, admin marks refunds done).
 
+### Screenshots
+
+All pictures are in [`docs/screenshots/`](docs/screenshots).
+
+**Customer side**
+
+| Home | Live deals (filter by sale, sort) |
+|---|---|
+| ![Home](docs/screenshots/01-home.png) | ![Deals](docs/screenshots/02-deals.png) |
+| **Search results** | **Flash sales (live / upcoming / ended tabs)** |
+| ![Search](docs/screenshots/03-search.png) | ![Flash sales](docs/screenshots/04-flash-sales.png) |
+| **Product page** | **Log in (with Google sign-in)** |
+| ![Product](docs/screenshots/05-product.png) | ![Login](docs/screenshots/06-login.png) |
+| **Cart (reserved items with timer)** | **Checkout (card or cash on delivery)** |
+| ![Cart](docs/screenshots/07-cart.png) | ![Checkout](docs/screenshots/08-checkout.png) |
+| **My orders** | **Profile** |
+| ![My orders](docs/screenshots/09-my-orders.png) | ![Profile](docs/screenshots/10-profile.png) |
+
+**Admin side**
+
+| Dashboard (live sales figures) | Create a sale |
+|---|---|
+| ![Dashboard](docs/screenshots/11-admin-dashboard.png) | ![Create sale](docs/screenshots/12-admin-create-sale.png) |
+| **Edit a sale** | **Deliveries (one parcel per customer)** |
+| ![Edit sale](docs/screenshots/13-admin-edit-sale.png) | ![Deliveries](docs/screenshots/14-admin-deliveries.png) |
+| **Users (search, activate / deactivate)** | |
+| ![Users](docs/screenshots/15-admin-users.png) | |
+
+**Mobile**
+
+| Home | Product page |
+|---|---|
+| <img src="docs/screenshots/16-mobile-home.png" alt="Mobile home" width="300"> | <img src="docs/screenshots/17-mobile-product.png" alt="Mobile product page" width="300"> |
+
 ---
 
 ## 1. Quick start (Docker – recommended, runs everything)
